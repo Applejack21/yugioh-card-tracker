@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class, // Create some starting users.
+            CardSetSeeder::class, // Create some card sets.
         ]);
     }
 }
