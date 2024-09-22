@@ -17,6 +17,9 @@
         "laravel/telescope": "v5.0",
         "laravel/tinker": "v2.9.0",
         "predis/predis": "^2.2.2",
+        "saloonphp/laravel-plugin": "^3.0",
+        "saloonphp/pagination-plugin": "^2.0",
+        "spatie/laravel-medialibrary": "^11.9",
         "tightenco/ziggy": "^1.4"
     },
     "require-dev": {

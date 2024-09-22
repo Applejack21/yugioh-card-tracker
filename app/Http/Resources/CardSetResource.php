@@ -5,7 +5,6 @@ namespace App\Http\Resources;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Number;
 
 class CardSetResource extends JsonResource
 {
@@ -17,15 +16,16 @@ class CardSetResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-			'id' => $this->id,
-			'name' => $this->name,
-			'code' => $this->code,
-			'total_cards' => $this->total_cards,
-			'release_date' => $this->release_date,
-			'release_date_formatted' => Carbon::parse($this->release_date)->format('Y-m-d'),
-			'ygo_pro_deck_image_url' => $this->ygo_pro_deck_image_url,
-			'created_at' => $this->created_at,
-			'updated_at' => $this->updated_at,
-		];
+            'id' => $this->id,
+            'image' => $this->getFirstMedia('image') ? $this->getFirstMediaUrl('image') : $this->ygo_pro_deck_url,
+            'name' => $this->name,
+            'code' => $this->code,
+            'total_cards' => $this->total_cards,
+            'release_date' => $this->release_date,
+            'release_date_formatted' => $this?->release_date?->format('Y-m-d'),
+            'ygo_pro_deck_image_url' => $this->ygo_pro_deck_image_url,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
     }
 }

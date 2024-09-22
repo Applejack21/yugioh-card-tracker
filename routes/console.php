@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Jobs\BatchImportCards;
+use App\Jobs\ImportCardSets;
+use Illuminate\Support\Facades\Schedule;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,6 @@ use Illuminate\Support\Facades\Artisan;
 |
 */
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+// Import card sets/cards. Card batch is at a specific time to let card sets be imported/updated.
+Schedule::job(new ImportCardSets)->daily();
+Schedule::job(new BatchImportCards)->dailyAt('02:00');

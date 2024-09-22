@@ -11,7 +11,7 @@ class HomepageController extends Controller
 	/**
 	 * Display the homepage to the user.
 	 *
-	 * @param  Request  $request Any request data.
+	 * @param  Request  $request  Any request data.
 	 */
 	public function index(Request $request): Response
 	{

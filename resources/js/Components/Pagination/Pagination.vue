@@ -1,5 +1,5 @@
 <template>
-	<div class="flex justify-center space-x-2 mt-5" v-if="links && links.last_page > 1">
+	<div class="flex justify-center flex-wrap gap-y-5 gap-x-2 mt-5" v-if="links && links.last_page > 1">
 		<template v-for="link in links.links" :key="link.url">
 			<!-- set default of the divider to the component we have for it -->
 			<template v-if="link.label == '...'">
@@ -47,9 +47,9 @@
 </template>
 
 <script setup>
+import { PaginationButton, PaginationDivider } from '@/Components/Pagination';
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/20/solid';
 import { computed } from 'vue';
-import { PaginationButton, PaginationDivider } from '@/Components/Pagination'
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/20/solid'
 
 const props = defineProps({
 	links: {

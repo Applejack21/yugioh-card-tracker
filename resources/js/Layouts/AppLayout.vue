@@ -68,6 +68,7 @@ const props = defineProps({
 
 const navigation = ref([
 	{ name: 'Homepage', href: route('homepage.index'), current: route().current('homepage.index') },
+	{ name: 'Cards', href: route('card.index'), current: route().current('card.*') },
 	{ name: 'Card Sets', href: route('card-set.index'), current: route().current('card-set.*') },
 ]);
 
