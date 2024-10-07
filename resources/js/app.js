@@ -2,6 +2,7 @@ import 'vue-toastification/dist/index.css';
 import '../css/app.css';
 import './bootstrap';
 
+import Container from '@/Components/Container.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { createInertiaApp, Link } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -23,6 +24,7 @@ createInertiaApp({
 				},
 				components: {
 					AppLayout,
+					Container,
 					Link,
 				},
 			})

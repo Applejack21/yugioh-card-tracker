@@ -24,12 +24,15 @@ class ImportCardInfo implements ShouldQueue
 
     public Collection $cards;
 
+    public bool $updateImage;
+
     /**
      * Create a new job instance.
      */
-    public function __construct(Collection $cards)
+    public function __construct(Collection $cards, bool $updateImage = false)
     {
         $this->cards = $cards;
+        $this->updateImage = $updateImage;
         $this->onQueue('high');
     }
 
@@ -51,7 +54,7 @@ class ImportCardInfo implements ShouldQueue
                 if (is_null($dbCard)) {
                     $card = (new CreateCard)->execute($card);
                 } else {
-                    $card = (new UpdateCard)->execute($dbCard, $card);
+                    $card = (new UpdateCard)->execute($dbCard, $card, $this->updateImage);
                 }
             });
         }

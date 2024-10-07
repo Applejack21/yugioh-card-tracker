@@ -24,8 +24,9 @@ class UpdateCard
      *
      * @param  Card  $card  The card we're updating.
      * @param  array  $request  Request param data.
+     * @param  bool  $updateImage  Decide if the image should be updated or not.
      */
-    public function execute(Card $card, array $request): Card
+    public function execute(Card $card, array $request, $updateImage): Card
     {
         // Get the images array. Returns 3 images but only interested in the main full card image.
         $images = $request['card_images'] ?? [];
@@ -42,8 +43,8 @@ class UpdateCard
             ...$request,
         ]);
 
-        // Add the card image. Should be added when the card record is made but just in case it didn't get added.
-        if ($card->getFirstMediaUrl('image') == '' && $images && isset($images[0]) && isset($images[0]['image_url'])) {
+        // Update the card's image (if we have an image) and bool is true.
+        if ($images && isset($images[0]) && isset($images[0]['image_url']) && $updateImage) {
             $this->saveImage($card, $images[0]['image_url']);
         }
 
@@ -73,14 +74,14 @@ class UpdateCard
      */
     private function formatDataForDatabase(Card $card, array $request): array
     {
-		$tcgDate = null;
-		$ocgDate = null;
+        $tcgDate = null;
+        $ocgDate = null;
 
-		// Get release dates.
-		if (isset($request['misc_info']) && isset($request['misc_info'][0])) {
-			$tcgDate = $request['misc_info'][0]['tcg_date'] ?? $card->tcg_date;
-			$ocgDate = $request['misc_info'][0]['ocg_date'] ?? $card->ocg_date;
-		}
+        // Get release dates.
+        if (isset($request['misc_info']) && isset($request['misc_info'][0])) {
+            $tcgDate = $request['misc_info'][0]['tcg_date'] ?? $card->tcg_date;
+            $ocgDate = $request['misc_info'][0]['ocg_date'] ?? $card->ocg_date;
+        }
 
         // Set the data to store in the database.
         return [
@@ -100,8 +101,8 @@ class UpdateCard
             'archetype' => $request['archetype'] ?? $card->archetype,
             'scale' => $request['scale'] ?? $card->scale,
             'link_val' => $request['linkval'] ?? $card->link_val,
-			'tcg_date' => $tcgDate,
-			'ocg_date' => $ocgDate,
+            'tcg_date' => $tcgDate,
+            'ocg_date' => $ocgDate,
         ];
     }
 

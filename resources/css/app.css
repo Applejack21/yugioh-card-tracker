@@ -1,3 +1,8 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+@import '@vueform/multiselect/themes/default.css';
+
+.hyperlink {
+	@apply text-secondary hover:underline hover:text-secondary-dark
+}

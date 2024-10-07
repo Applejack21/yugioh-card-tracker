@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Card\GetCards;
-use App\Http\Requests\StoreCardRequest;
-use App\Http\Requests\UpdateCardRequest;
+use App\Http\Requests\AddToCollectionRequest;
 use App\Http\Resources\CardResource;
 use App\Models\Card;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -27,50 +29,42 @@ class CardController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Add the passed card to the user's collection.
+     *
+     * @param  AddToCollectionRequest  $request  The request data.
+     * @param  Card  $card  The card the user is adding to their account.
      */
-    public function create()
+    public function addToCollection(AddToCollectionRequest $request, Card $card)
     {
-        //
-    }
+        // Get the user.
+        $user = Auth::user();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCardRequest $request)
-    {
-        //
-    }
+        // Does this user have this card currently in their collection? If so update it.
+        if ($collectionRow = $user->hasCardInCollection($card->id, $request->rarity_id)) {
+            // Update the row in the database.
+            // We can't use updateExistingPivot() as if the user has multiple cards (of different rarites) it'll make them all the same rarity and quantity.
+            // as it'll go off the "card_id" but not both "card_id" and "card_rarity_id".
+            DB::table('card_user')
+                ->where('user_id', $user->id)
+                ->where('card_id', $card->id)
+                ->where('card_rarity_id', $request->rarity_id)
+                ->update([
+                    'quantity' => $collectionRow->pivot->quantity + $request->quantity,
+                ]);
+        } else {
+            // Otherwise add it. We can add it via attach normally as it doesn't exist yet.
+            $user->cards()->attach([
+                $card->id => [
+                    'card_rarity_id' => $request->rarity_id,
+                    'quantity' => $request->quantity,
+                ],
+            ]);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Card $card)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Card $card)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCardRequest $request, Card $card)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Card $card)
-    {
-        //
+        return redirect()->back()->with('message', [
+            'id' => Str::uuid(),
+            'type' => 'success',
+            'message' => 'Added "' . $card->name . '" to your collection successfully.',
+        ]);
     }
 }

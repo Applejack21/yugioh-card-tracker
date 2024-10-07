@@ -27,7 +27,7 @@
 			</template>
 		</template>
 	</div>
-	<div class="flex justify-start space-x-2 mt-2.5">
+	<div class="flex justify-center space-x-2 mt-3">
 		<p class="text-sm text-gray-700">
 			Showing
 			{{ ' ' }}
