@@ -10,7 +10,7 @@
 				</span>
 			</div>
 			<div
-				class="sticky mt-5 grid grid-cols-3 w-full bg-gray-50 border-b border-t border-r border-l border-black py-2 px-2">
+				class="mt-5 grid grid-cols-3 w-full bg-gray-50 border-b border-t border-r border-l border-black py-2 px-2">
 				<div class="col-span-2">
 					Rarity Name
 				</div>
