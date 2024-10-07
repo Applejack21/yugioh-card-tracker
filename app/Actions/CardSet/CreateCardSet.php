@@ -13,7 +13,17 @@ class CreateCardSet
      */
     public function execute(array $request): CardSet
     {
-        $date = $request['tcg_date'] == '0000-00-00' ? today() : $request['tcg_date'];
+        $date = null;
+
+        // Check to see if tcg_date is returned.
+        if (isset($request['tcg_date'])) {
+            // Set the date based on what is returned.
+            if ($request['tcg_date'] == '0000-00-00') {
+                $date = today();
+            } else {
+                $date = $request['tcg_date'];
+            }
+        }
 
         $cardSet = CardSet::create([
             'name' => $request['set_name'],

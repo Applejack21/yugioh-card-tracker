@@ -22,6 +22,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'first_name' => ['nullable', 'string', 'max:255'],
             'last_name' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'public' => ['nullable', 'boolean'],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ])->validateWithBag('updateProfileInformation');
 
@@ -37,9 +38,10 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         } else {
             $user->forceFill([
                 'username' => $input['username'],
-                'first_name' => $input['first_name'] ?? null,
-                'last_name' => $input['last_name'] ?? null,
+                'first_name' => $input['first_name'],
+                'last_name' => $input['last_name'],
                 'email' => $input['email'],
+                'public' => $input['public'],
             ])->save();
         }
     }
@@ -58,6 +60,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'last_name' => $input['last_name'] ?? null,
             'email' => $input['email'],
             'email_verified_at' => null,
+            'public' => $input['public'],
         ])->save();
 
         $user->sendEmailVerificationNotification();

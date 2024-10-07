@@ -1,5 +1,5 @@
 <template>
-	<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-5" :class="colSpan">
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-10 2xl:grid-cols-12 gap-5" :class="colSpan">
 		<div v-for="item in items" :class="[colSpan, {
 			'flex': addFlex,
 		}]">
