@@ -121,9 +121,11 @@ class Card extends Model implements HasMedia
         if ($user) {
             return $this->rarities()
                 ->wherePivot('user_id', $user->id)
+				->wherePivot('quantity', '>=', 1)
                 ->get()
                 ->map(function ($rarity) {
                     return [
+						'id' => $rarity->id,
                         'rarity_name' => $rarity->name,
                         'quantity' => $rarity->pivot->quantity,
                     ];

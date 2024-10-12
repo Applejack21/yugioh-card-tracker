@@ -101,6 +101,7 @@ const submit = () => {
 			props.form.reset();
 			close();
 		},
+		preserveScroll: true,
 	});
 }
 </script>

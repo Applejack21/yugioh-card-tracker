@@ -1,6 +1,6 @@
 <template>
 	<footer class="bg-white pt-32 pb-[100px] shadow-[0_-4px_10px_10px_rgba(0,_0,_0,_0.05)] relative -mb-2">
-		<Container class="space-y-12 divide-y divide-grey-300">
+		<Container class="space-y-12">
 			<div class="grid grid-cols-1 md:grid-cols-12 gap-5">
 				<div class="flex flex-col w-full lg:flex-none md:col-span-3 mb-10 lg:mb-0">
 					<div class="sm:w-1/2 md:w-full mb-2 mx-auto">
@@ -28,6 +28,19 @@
 					<FooterMenu v-for="menu in footerMenus" :title="menu.title" :links="menu.links" />
 				</div>
 			</div>
+		</Container>
+		<Container class="mt-5">
+			<span class="w-full flex justify-center text-xs">
+				Data for this site is retrieved from
+				<a class="hyperlink ml-1" href="https://ygoprodeck.com/" target="_blank">YGOPRODeck</a>.
+				Data is imported daily at midnight.
+			</span>
+			<span class="w-full flex text-xs text-center mt-2">
+				The literal and graphical information presented on this site about Yu-Gi-Oh!, including card images, the
+				attribute, level/rank and type symbols, and card text, is copyright 4K Media Inc, a subsidiary of Konami
+				Digital Entertainment, Inc. This website is not produced by, endorsed by, supported by, or affiliated
+				with 4k Media or Konami Digital Entertainment.
+			</span>
 		</Container>
 	</footer>
 </template>

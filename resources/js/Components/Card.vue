@@ -47,16 +47,21 @@
 		<div class="flex justify-between px-0.5 grid-cols-3 mx-auto items-center w-full">
 			<div class="flex items-center flex-shrink-0 size-8 justify-center leading-none hover:cursor-pointer"
 				title="View Your Collection" @click.prevent="displayUserCollection">
-				<div>
-					<span class="card card-squares card-first-set z-30 relative" :class="[
+				<div class="flex flex-col">
+					<span class="card card-squares card-first-set" :class="[
 						{ 'active': quantities.total > 0 }
-					]" />
+					]">
+					</span>
+					<div class="text-xxs text-center flex w-full justify-center">
+						{{ `${collectedRarities.length} / ${cardRarities.length}` }}
+					</div>
 				</div>
 			</div>
 			<!-- Add/remove buttons and total -->
 			<div class="flex gap-x-5 justify-center items-center w-full" v-if="cardRarities.length && user">
 				<div>
-					<MinusIcon class="size-5 text-gray-500 hover:text-black hover:cursor-pointer" />
+					<MinusIcon class="size-5 text-gray-500 hover:text-black hover:cursor-pointer"
+						@click.prevent="removeCardFromCollection()" />
 				</div>
 				<div class="text-lg font-semibold">
 					{{ quantities.total }}
@@ -92,8 +97,8 @@
 										{{ rarity.name }}
 									</span>
 									<div class="ml-auto p-2 rounded-md text-white" :class="[
-										{'bg-gray-500': findQuantityByRarityName(rarity.name) <= 0},
-										{'bg-[#1d9e74]': findQuantityByRarityName(rarity.name) > 0},
+										{ 'bg-gray-500': findQuantityByRarityName(rarity.name) <= 0 },
+										{ 'bg-[#1d9e74]': findQuantityByRarityName(rarity.name) > 0 },
 									]">
 										{{ findQuantityByRarityName(rarity.name) }}
 									</div>
@@ -109,7 +114,7 @@
 					Log in to add this card to your collection.
 				</span>
 				<span v-else>
-					No card rarities for this card yet.
+					No card rarities found.
 				</span>
 			</div>
 			<Menu as="div" class="relative ml-auto">
@@ -160,17 +165,21 @@
 
 	<RarityModal :card="card" :cardRarities="cardRarities" :show="showRarities" @close="closeRarities" />
 
-	<UserCardCollectionModal :card="card" :collectedRarities="quantities.rarities" :show="showUserCollection"
+	<UserCardCollectionModal :card="card" :collectedRarities="collectedRarities" :show="showUserCollection"
 		@close="closeUserCollection" />
 
 	<AddCardToCollectionModal :card="card" :form="addRarityForm" :rarities="cardRarities" :show="showAddModal"
 		@close="closeAddModal" />
+
+	<RemoveCardFromCollectionModal :card="card" :form="removeRarityForm" :rarities="collectedRarities"
+		:show="showRemoveModal" @close="closeRemoveModal" @decrease-quantity="decreaseQuantity" />
 </template>
 
 <script setup>
 import AddCardToCollectionModal from "@/Components/AddCardToCollectionModal.vue";
 import PriceModal from "@/Components/PriceModal.vue";
 import RarityModal from "@/Components/RarityModal.vue";
+import RemoveCardFromCollectionModal from "@/Components/RemoveCardFromCollectionModal.vue";
 import UserCardCollectionModal from "@/Components/UserCardCollectionModal.vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { CurrencyPoundIcon, SwatchIcon } from '@heroicons/vue/24/outline';
@@ -184,6 +193,7 @@ const props = defineProps({
 
 const user = inject('user', null);
 const quantities = computed(() => props.card.quantities);
+const collectedRarities = computed(() => props.card.quantities.rarities);
 const cardSets = computed(() => props.card.card_sets);
 const cardPrices = computed(() => props.card.card_prices);
 const cardRarities = computed(() => {
@@ -245,7 +255,7 @@ const closeRarities = () => showRarities.value = false;
 // Show user's collection.
 const showUserCollection = ref(false);
 const displayUserCollection = () => {
-	if(quantities.value.rarities.length) {
+	if (collectedRarities.value.length) {
 		showUserCollection.value = true
 	}
 };
@@ -254,7 +264,7 @@ const closeUserCollection = () => showUserCollection.value = false;
 const findQuantityByRarityName = (name) => {
 	let quantity = 0;
 
-	const find = quantities.value.rarities.find((quantity) => quantity.rarity_name.toLowerCase() == name.toLowerCase());
+	const find = collectedRarities.value.find((quantity) => quantity.rarity_name.toLowerCase() == name.toLowerCase());
 
 	if (find) {
 		quantity = find.quantity;
@@ -272,11 +282,57 @@ const addRarityForm = useForm({
 	quantity: 1,
 });
 
+
 // Display the modal and set this rarity and the default selected rarity.
 // Users can still change their rarity within the modal.
 const addRarityToCollection = (rarity) => {
 	addRarityForm.rarity_id = rarity.id;
 	displayAddModal();
+}
+
+// Removal of a rarity from a card.
+const showRemoveModal = ref(false);
+const displayRemoveModal = () => showRemoveModal.value = true;
+const closeRemoveModal = () => showRemoveModal.value = false;
+const removeRarityForm = useForm({
+	rarity_id: '',
+});
+
+// Decrease the quantity of the rarity the user has in their collection
+// Or open the modal for them to decide (if they have multiple rarities collected).
+const removeCardFromCollection = () => {
+	if (collectedRarities.value.length > 0) {
+		// If they only have one rarity collected then use that one.
+		if (collectedRarities.value.length == 1) {
+			removeRarityForm.rarity_id = collectedRarities.value[0].id;
+			removeRarityForm.post(route('card.decrease-card-quantity', props.card), {
+				onFinish: () => {
+					removeRarityForm.reset();
+					close();
+				},
+				preserveScroll: true,
+			});
+			return;
+		} else {
+			// Otherwise open modal for them to choose rarity to decrease.
+			displayRemoveModal();
+		}
+	}
+}
+
+// Decrease the selected quantity from the modal.
+const decreaseQuantity = (rarity) => {
+	if (rarity) {
+		removeRarityForm.rarity_id = rarity.id;
+		removeRarityForm.post(route('card.decrease-card-quantity', props.card), {
+			onFinish: () => {
+				removeRarityForm.reset();
+				close();
+			},
+			preserveScroll: true,
+		});
+
+	}
 }
 </script>
 
