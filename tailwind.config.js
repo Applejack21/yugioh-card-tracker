@@ -69,6 +69,10 @@ module.exports = {
 			maxWidth: {
 				"8xl": "1440px",
 			},
+			fontSize: {
+                xxxs: '0.6rem', // 14px
+                xxs: '0.7rem', // 16px
+			}
 		},
 	},
 

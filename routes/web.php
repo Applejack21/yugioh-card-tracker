@@ -39,6 +39,7 @@ Route::middleware(VerifiedIfLoggedIn::class)->group(function () {
 // Routes for logged in users only.
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::controller(CardController::class)->name('card.')->group(function () {
-        Route::post('/card/{card}', 'addToCollection')->name('add-card-to-collection');
+        Route::post('/card/{card}/add', 'addToCollection')->name('add-card-to-collection');
+		Route::post('/card/{card}/decrease-quantity', 'decreaseCardQuantity')->name('decrease-card-quantity');
     });
 });
